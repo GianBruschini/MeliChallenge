@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/searchFragment">
+
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.meli.melichallenge.presentation.search.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_productsFragment"
+            app:destination="@id/productsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/productsFragment"
+        android:name="com.meli.melichallenge.ProductsFragment"
+        android:label="fragment_products"
+        tools:layout="@layout/fragment_products" >
+        <action
+            android:id="@+id/action_productsFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_productsFragment_to_detailProductsFragment"
+            app:destination="@id/detailProductsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailProductsFragment"
+        android:name="com.meli.melichallenge.DetailProductsFragment"
+        android:label="fragment_detail_products"
+        tools:layout="@layout/fragment_detail_products" >
+        <action
+            android:id="@+id/action_detailProductsFragment_to_productsFragment"
+            app:destination="@id/productsFragment" />
+    </fragment>
+</navigation>
