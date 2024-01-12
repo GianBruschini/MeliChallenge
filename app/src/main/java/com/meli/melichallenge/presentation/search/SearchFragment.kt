@@ -17,6 +17,19 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initUi()
+    }
+
+    private fun initUi() {
+        initListeners()
+        initObservers()
+    }
+
+    private fun initObservers() {
+
+    }
+
+    private fun initListeners() {
 
     }
 

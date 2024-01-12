@@ -1,4 +1,4 @@
-package com.meli.melichallenge.presentation.search
+package com.meli.melichallenge.presentation
 
 import android.os.Bundle
 import com.meli.melichallenge.presentation.base.BaseActivity
