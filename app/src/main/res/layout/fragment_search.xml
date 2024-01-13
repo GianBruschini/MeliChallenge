@@ -1,35 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:context=".presentation.search.SearchFragment">
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/ProgressBarStyle"
+        />
+
     <ImageView
+        android:id="@+id/meliImage"
         style="@style/Image"
-        android:layout_marginTop="@dimen/margin_extra_big"
-        android:src="@drawable/meli_icon">
+        android:layout_marginTop="@dimen/margin_big"
+        android:src="@drawable/meli_icon"
+        android:layout_centerHorizontal="true"
+        >
     </ImageView>
 
     <EditText
         android:id="@+id/searcher"
         style="@style/SearchStyle"
-        android:layout_marginHorizontal="@dimen/margin_big"
-         />
-
+        android:layout_below="@id/meliImage"
+        android:layout_marginHorizontal="@dimen/margin_big" />
 
     <Button
         android:id="@+id/searchBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/Button"
         android:text="@string/search_btn_text"
+        android:layout_below="@id/searcher"
         android:layout_marginHorizontal="@dimen/margin_extra_big"
         android:layout_marginTop="@dimen/margin_x_big">
     </Button>
 
-
-
-
-</LinearLayout>
+</RelativeLayout>

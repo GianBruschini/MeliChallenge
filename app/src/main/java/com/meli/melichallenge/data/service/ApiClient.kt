@@ -8,6 +8,6 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface ApiClient {
-    @GET("sites/MLA/search/")
+    @GET("sites/MLA/search")
     suspend fun searchProducts(@Query("q") query: String): Response<NetworkResponse<Product>>
 }

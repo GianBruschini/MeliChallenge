@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.meli.melichallenge.R
 import com.meli.melichallenge.data.api.model.response.Product
 import com.meli.melichallenge.databinding.FragmentSearchBinding
 import com.meli.melichallenge.presentation.base.BaseFragment
@@ -39,7 +41,14 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(
     }
 
     private fun handleLoading(loading: Boolean) {
-
+            when(loading){
+                true->{
+                    binding.progressBar.visibility=View.VISIBLE
+                }
+                false -> {
+                    binding.progressBar.visibility=View.GONE
+                }
+            }
     }
 
     private fun handleUserMessage(userMessage: BindingString?) {
@@ -49,8 +58,22 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(
     }
 
     private fun handleGetProducts(productsFetched: List<Product>?) {
+        productsFetched?.let {
+            val bundle = Bundle().apply {
+                putSerializable("productsList", ArrayList(it))
+            }
+            navigateToProductsFragment(bundle)
+        }
 
     }
+
+    private fun navigateToProductsFragment(bundle: Bundle) {
+        val navController = findNavController()
+        if (navController.currentDestination?.id == R.id.searchFragment) {
+            navController.navigate(R.id.action_searchFragment_to_productsFragment, bundle)
+        }
+    }
+
 
     private fun initListeners() {
         binding.searchBtn.setOnClickListener {
