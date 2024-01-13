@@ -14,10 +14,20 @@
     </ImageView>
 
     <EditText
-        android:id="@+id/buscador"
+        android:id="@+id/searcher"
         style="@style/SearchStyle"
         android:layout_marginHorizontal="@dimen/margin_big"
          />
+
+
+    <Button
+        android:id="@+id/searchBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/search_btn_text"
+        android:layout_marginHorizontal="@dimen/margin_extra_big"
+        android:layout_marginTop="@dimen/margin_x_big">
+    </Button>
 
 
 

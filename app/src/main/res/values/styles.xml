@@ -24,4 +24,12 @@
         <item name="android:layout_height">@dimen/image_x_big</item>
     </style>
 
+    <style name="Button">
+        <item name="android:layout_width">250dp</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">?colorPrimary</item>
+        <item name="android:textSize">@dimen/text_standard</item>
+    </style>
+
 </resources>
