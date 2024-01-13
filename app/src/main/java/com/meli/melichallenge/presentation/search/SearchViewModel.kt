@@ -22,26 +22,30 @@ class SearchViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    private var _productsList = MutableLiveData<List<Product>>()
-    val productsList: LiveData<List<Product>> get() = _productsList
-
+    private var _productsList = MutableLiveData<List<Product>?>(null)
+    val productsList: LiveData<List<Product>?> get() = _productsList
 
     private var _isLoaderVisible = MutableLiveData(false)
     val isLoaderVisible: LiveData<Boolean> get() = _isLoaderVisible
 
-    var _errorEvent = MutableLiveData<String>()
+    private var _errorEvent = MutableLiveData<String>()
     val errorEvent: LiveData<String> get() = _errorEvent
 
     private var _isEmptySearchVisible = MutableLiveData(false)
     val isEmptySearchVisible: LiveData<Boolean> get() = _isEmptySearchVisible
 
+    private var _hasMoreItems = MutableLiveData(true)
+    val hasMoreItems: LiveData<Boolean> get() = _hasMoreItems
 
-    private fun getOffset() = _productsList.value?.size ?: 0
+    private var currentPage = 1
+    private val PAGE_SIZE = 50
 
     fun getProducts(aProduct: String) {
+        if (_hasMoreItems.value == false) return // No más elementos para cargar
+
         _isLoaderVisible.value = true
         viewModelScope.launch {
-            val resultQuery = getProductsUseCase.searchProducts(aProduct, getOffset(), PAGE_SIZE)
+            val resultQuery = getProductsUseCase.searchProducts(aProduct, currentPage, PAGE_SIZE)
             if (resultQuery.isSuccessful) {
                 handleSuccessfulSearch(resultQuery.body()?.results!!)
             } else {
@@ -49,11 +53,22 @@ class SearchViewModel @Inject constructor(
             }
             _isLoaderVisible.value = false
         }
-
     }
 
     private fun handleSuccessfulSearch(results: List<Product>) {
-        _productsList.value = results
+        if (_productsList.value == null) {
+            _productsList.value = results
+        } else {
+            val currentList = _productsList.value!!.toMutableList()
+            currentList.addAll(results)
+            _productsList.value = currentList
+        }
+
+        // Actualiza el indicador de carga infinita
+        _hasMoreItems.value = results.size == PAGE_SIZE
+
+        // Incrementa la página actual
+        currentPage++
     }
 
     private fun handleErrorSearch() {
@@ -61,6 +76,5 @@ class SearchViewModel @Inject constructor(
         _errorEvent.value = context.resources.getString(R.string.error_products_search)
         _isEmptySearchVisible.value = _productsList.value.isNullOrEmpty()
     }
-
 }
 

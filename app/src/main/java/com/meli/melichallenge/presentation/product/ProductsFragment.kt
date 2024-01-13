@@ -35,7 +35,31 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initUi()
+        observeScrollEvents()
+    }
 
+    private fun observeScrollEvents() {
+        binding.productsRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 0) {
+                    binding.productsRv.layoutManager?.let {
+                        visibleItemCount = it.childCount
+                        totalItemCount = it.itemCount
+                        pastVisibleItems = (it as LinearLayoutManager).findFirstVisibleItemPosition()
+                    }
+                    if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                        searchViewModel.getProducts(productName)
+                    }
+                }
+            }
+        })
+
+        // Observa cambios en la lista de productos
+        searchViewModel.productsList.observe(viewLifecycleOwner) { products ->
+            products?.let {
+                fillProductsRv(it)
+            }
+        }
     }
 
 
@@ -50,25 +74,6 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
         binding.productsRv.adapter?.notifyDataSetChanged()
         productsAdapter.setOnItemClickListener(this)
 
-        binding.productsRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 0) {
-                    binding.productsRv.layoutManager?.let {
-                        visibleItemCount = it.childCount
-                        totalItemCount = it.itemCount
-                        pastVisibleItems =
-                            (it as LinearLayoutManager).findFirstVisibleItemPosition()
-                    }
-                    if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
-                        if (binding.swipeResults.isRefreshing.not()) {
-                            this@ProductsFragment.searchViewModel.getProducts(productName)
-                        }
-
-
-                    }
-                }
-            }
-        })
 
     }
 
@@ -91,10 +96,6 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
     }
 
     private fun initObservers() {
-        searchViewModel.productsList.observe(viewLifecycleOwner) {
-            Log.d("Result_products", it.toString())
-            fillProductsRv(it)
-        }
         searchViewModel.isLoaderVisible.observe(viewLifecycleOwner) {
             handleLoading(it)
         }
