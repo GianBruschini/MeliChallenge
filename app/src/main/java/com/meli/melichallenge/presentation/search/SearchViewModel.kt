@@ -1,51 +1,66 @@
 package com.meli.melichallenge.presentation.search
 
+import android.content.Context
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.meli.melichallenge.R
 import com.meli.melichallenge.data.api.model.response.Product
-import com.meli.melichallenge.domain.model.ResultValue
 import com.meli.melichallenge.domain.usecase.product.GetProductsUseCase
-import com.meli.melichallenge.util.errorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val PAGE_SIZE = 50
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val getProductsUseCase: GetProductsUseCase,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(SearchUiState())
-    val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
-    private var fetchJob: Job? = null
+
+    private var _productsList = MutableLiveData<List<Product>>()
+    val productsList: LiveData<List<Product>> get() = _productsList
+
+
+    private var _isLoaderVisible = MutableLiveData(false)
+    val isLoaderVisible: LiveData<Boolean> get() = _isLoaderVisible
+
+    var _errorEvent = MutableLiveData<String>()
+    val errorEvent: LiveData<String> get() = _errorEvent
+
+    private var _isEmptySearchVisible = MutableLiveData(false)
+    val isEmptySearchVisible: LiveData<Boolean> get() = _isEmptySearchVisible
+
+
+    private fun getOffset() = _productsList.value?.size ?: 0
 
     fun getProducts(aProduct: String) {
-        setLoading(true)
-        fetchJob?.cancel()
-        fetchJob = viewModelScope.launch {
-            val result = getProductsUseCase(aProduct)
-            handleResult(result)
-            setLoading(false)
+        _isLoaderVisible.value = true
+        viewModelScope.launch {
+            val resultQuery = getProductsUseCase.searchProducts(aProduct, getOffset(), PAGE_SIZE)
+            if (resultQuery.isSuccessful) {
+                handleSuccessfulSearch(resultQuery.body()?.results!!)
+            } else {
+                handleErrorSearch()
+            }
+            _isLoaderVisible.value = false
         }
+
     }
 
-    private fun handleResult(result: ResultValue<List<Product>>) {
-        when (result) {
-            is ResultValue.Success -> {
-                _uiState.update { it.copy(productsFetched = result.data) }
-            }
-            is ResultValue.Error -> {
-                _uiState.update { it.copy(userMessage = result.exception.errorMessage()) }
-            }
-        }
+    private fun handleSuccessfulSearch(results: List<Product>) {
+        _productsList.value = results
     }
 
-    private fun setLoading(loading: Boolean) {
-        _uiState.update { it.copy(loading = loading) }
+    private fun handleErrorSearch() {
+        _isLoaderVisible.value = false
+        _errorEvent.value = context.resources.getString(R.string.error_products_search)
+        _isEmptySearchVisible.value = _productsList.value.isNullOrEmpty()
     }
+
 }
 

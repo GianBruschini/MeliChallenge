@@ -9,7 +9,7 @@
     <!-- Errors-->
     <string name="error_unknown">We couldn\'t send to send your request. Please try again.</string>
     <string name="error_network_connection">Connection error. Please check your connection and try again.</string>
-
+    <string name="error_products_search">Error when trying to search products, please try again later.</string>
 
 
 </resources>
