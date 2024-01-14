@@ -4,45 +4,77 @@ package com.meli.melichallenge.presentation.product
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.meli.melichallenge.R
 import com.meli.melichallenge.data.api.model.response.Product
 import com.meli.melichallenge.databinding.FragmentProductsBinding
 import com.meli.melichallenge.presentation.adapter.ProductsAdapter
 import com.meli.melichallenge.presentation.base.BaseFragment
+import com.meli.melichallenge.util.BundleKeys
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ProductsFragment : BaseFragment<FragmentProductsBinding>(
     FragmentProductsBinding::inflate,
-),ProductsAdapter.OnItemClickListener {
-    private var productsList: List<Product>? = null
-    private val productsAdapter = ProductsAdapter()
+), ProductsAdapter.OnItemClickListener {
+    private var listOfProducts: ArrayList<Product>? = null
+    private var productName = ""
+    private val productViewModel: ProductViewModel by viewModels()
+    private var productsAdapter: ProductsAdapter = ProductsAdapter()
+    private var visibleItemCount = 0
+    private var totalItemCount = 0
+    private var pastVisibleItems = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState != null) {
-            productsList = savedInstanceState.getSerializable("productsList") as? ArrayList<Product>
-        }else{
-            productsList = arguments?.getSerializable("productsList") as? ArrayList<Product>
-        }
+        productName = arguments?.getString(BundleKeys.PRODUCT_NAME).toString()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initRecyclerView()
-        productsList?.let { fillProductsRv(it) }
+        initUi()
+        observeScrollEvents()
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun fillProductsRv(productsList: List<Product>) {
-        val arrayListOfObras = ArrayList(productsList)
-        productsAdapter.setList(arrayListOfObras)
-        productsAdapter.notifyDataSetChanged()
+    private fun observeScrollEvents() {
+        binding.productsRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 0) {
+                    binding.productsRv.layoutManager?.let {
+                        visibleItemCount = it.childCount
+                        totalItemCount = it.itemCount
+                        pastVisibleItems =
+                            (it as LinearLayoutManager).findFirstVisibleItemPosition()
+                    }
+                    if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                        productViewModel.getProducts(productName)
+                    }
+                }
+            }
+        })
+
+        productViewModel.productsList.observe(viewLifecycleOwner) { products ->
+            if (products?.isEmpty() == true) {
+                binding.noResultsTxt.visibility = View.VISIBLE
+            } else {
+                binding.noResultsTxt.visibility = View.GONE
+                products?.let {
+                    this.listOfProducts = it as ArrayList<Product>
+                    fillProductsRv(it)
+                }
+            }
+
+        }
     }
+
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initRecyclerView() {
-        val linearLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        val linearLayoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.productsRv.layoutManager = linearLayoutManager
         binding.productsRv.setHasFixedSize(true)
         binding.productsRv.adapter = productsAdapter
@@ -50,13 +82,68 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
         productsAdapter.setOnItemClickListener(this)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putSerializable("productsList", ArrayList(productsList))
+
+    private fun initUi() {
+        initOnClicks()
+        initRecyclerView()
+        initObservers()
+        executeObservers()
+    }
+
+    private fun initOnClicks() {
+        binding.imgBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
+    private fun executeObservers() {
+        productViewModel.getProducts(productName)
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables", "NotifyDataSetChanged")
+    private fun fillProductsRv(productsList: List<Product>) {
+        val arrayListOfProducts = ArrayList(productsList)
+        productsAdapter.setList(arrayListOfProducts)
+        productsAdapter.notifyDataSetChanged()
+    }
+
+    private fun initObservers() {
+        productViewModel.isLoaderVisible.observe(viewLifecycleOwner) {
+            handleLoading(it)
+        }
+    }
+
+    private fun handleLoading(loading: Boolean) {
+        when (loading) {
+            true -> {
+                binding.progressBar.visibility = View.VISIBLE
+            }
+
+            false -> {
+                binding.progressBar.visibility = View.GONE
+            }
+        }
     }
 
     override fun onitemClick(position: Int) {
+        listOfProducts?.get(position)
+            ?.let { navigateToProductDetailFragment(it.id, it.title, it.permalink, it.thumbnail) }
+    }
 
+    private fun navigateToProductDetailFragment(
+        productId: String,
+        productTitle: String,
+        productPermaLink: String,
+        productImage: String
+    ) {
+        val bundle = Bundle().apply {
+            putString(BundleKeys.PRODUCT_ID, productId)
+            putString(BundleKeys.PRODUCT_TITLE, productTitle)
+            putString(BundleKeys.PRODUCT_PERMALINK, productPermaLink)
+            putString(BundleKeys.PRODUCT_IMAGE, productImage)
+        }
+        val navController = findNavController()
+        navController.navigate(R.id.action_productsFragment_to_detailProductsFragment, bundle)
     }
 
 }

@@ -24,6 +24,52 @@
         <item name="android:layout_height">@dimen/image_x_big</item>
     </style>
 
+    <style name="IconBack">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@drawable/icon_back</item>
+        <item name="android:layout_alignParentStart">true</item>
+        <item name="android:padding">@dimen/margin_standard</item>
+    </style>
+
+    <style name="TextEmptyResults">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">@dimen/margin_x_big</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/text_x_big</item>
+        <item name="android:text">@string/product_no_results</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="CardViewStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_x_big</item>
+        <item name="cardCornerRadius">@dimen/radius_x_big</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="elevation">@dimen/elevation_medium</item>
+        <item name="android:layout_marginTop">@dimen/margin_x_big</item>
+    </style>
+
+    <style name="NormalText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">@dimen/margin_x_big</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+    </style>
+
+
+
+
+    <style name="Body">
+        <item name="android:textSize">@dimen/text_standard</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
     <style name="Button">
         <item name="android:layout_width">250dp</item>
         <item name="android:layout_height">45dp</item>

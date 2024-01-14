@@ -2,13 +2,16 @@ package com.meli.melichallenge.presentation.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.meli.melichallenge.data.api.model.response.Product
 import com.meli.melichallenge.databinding.ProductItemBinding
 
 class ProductsAdapter: RecyclerView.Adapter<ProductsAdapter.MyViewHolder>() {
+    private var context: Context? = null
     private var listOfProducts = ArrayList<Product>()
     private var mListener: OnItemClickListener? = null
 
@@ -23,6 +26,7 @@ class ProductsAdapter: RecyclerView.Adapter<ProductsAdapter.MyViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        this.context = parent.context
         return MyViewHolder(
             ProductItemBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -33,7 +37,11 @@ class ProductsAdapter: RecyclerView.Adapter<ProductsAdapter.MyViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.binding.productText.text = listOfProducts[position].title
+        val url = listOfProducts[position].thumbnail
+        context?.let { Glide.with(it).load(url).into(holder.binding.productImage) }
+        holder.binding.productTitle.text = listOfProducts[position].title
+        holder.binding.productPrice.text = listOfProducts[position].price.toString()
+
     }
 
     override fun getItemCount(): Int {
@@ -48,7 +56,7 @@ class ProductsAdapter: RecyclerView.Adapter<ProductsAdapter.MyViewHolder>() {
     inner class MyViewHolder(val binding: ProductItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         init {
-            binding.rlProduct.setOnClickListener {
+            binding.cardProduct.setOnClickListener {
                 if (mListener != null) {
                     val position = adapterPosition
                     if (position != RecyclerView.NO_POSITION) {

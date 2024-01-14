@@ -1,15 +1,17 @@
 package com.meli.melichallenge.presentation.search
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.meli.melichallenge.R
-import com.meli.melichallenge.data.api.model.response.Product
 import com.meli.melichallenge.databinding.FragmentSearchBinding
 import com.meli.melichallenge.presentation.base.BaseFragment
-import com.meli.melichallenge.util.BindingString
+import com.meli.melichallenge.util.BundleKeys
+import com.meli.melichallenge.util.hideKeyboard
+import com.meli.melichallenge.util.showCustomToast
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -18,8 +20,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(
     FragmentSearchBinding::inflate,
 ) {
 
-    private val searchViewModel: SearchViewModel by viewModels()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initUi()
@@ -27,57 +27,38 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(
 
     private fun initUi() {
         initListeners()
-        initObservers()
     }
 
-    private fun initObservers() {
-        lifecycleScope.launchWhenStarted {
-            searchViewModel.uiState.collect { state ->
-                handleGetProducts(state.productsFetched)
-                handleLoading(state.loading)
-                handleUserMessage(state.userMessage)
-            }
+
+    private fun navigateToProductsFragment() {
+        val bundle = Bundle().apply {
+            putString(BundleKeys.PRODUCT_NAME, binding.searcher.text.toString())
         }
-    }
-
-    private fun handleLoading(loading: Boolean) {
-            when(loading){
-                true->{
-                    binding.progressBar.visibility=View.VISIBLE
-                }
-                false -> {
-                    binding.progressBar.visibility=View.GONE
-                }
-            }
-    }
-
-    private fun handleUserMessage(userMessage: BindingString?) {
-        userMessage?.let {
-            handleError(it)
-        }
-    }
-
-    private fun handleGetProducts(productsFetched: List<Product>?) {
-        productsFetched?.let {
-            val bundle = Bundle().apply {
-                putSerializable("productsList", ArrayList(it))
-            }
-            navigateToProductsFragment(bundle)
-        }
-
-    }
-
-    private fun navigateToProductsFragment(bundle: Bundle) {
         val navController = findNavController()
         if (navController.currentDestination?.id == R.id.searchFragment) {
+            hideKeyboard()
             navController.navigate(R.id.action_searchFragment_to_productsFragment, bundle)
         }
     }
 
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun initListeners() {
         binding.searchBtn.setOnClickListener {
-            searchViewModel.getProducts(binding.searcher.text.toString())
+            if(binding.searcher.text.isNotEmpty()){
+                navigateToProductsFragment()
+            }else{
+                ContextCompat.getDrawable(requireContext(), R.drawable.rounded_gradient_error)
+                    ?.let { drawable ->
+                        Toast(requireContext()).showCustomToast(
+                            getString(R.string.search_warning_empty_text),
+                            drawable,
+                            requireActivity()
+                        )
+                    }
+
+            }
+
         }
     }
 

@@ -1,16 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.product.ProductsFragment">
 
 
+    <ImageView
+        android:id="@+id/imgBack"
+        style="@style/IconBack">
+    </ImageView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/ProgressBarStyle" />
+
+    <TextView
+        android:id="@+id/noResultsTxt"
+        style="@style/TextEmptyResults"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        >
+
+    </TextView>
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/productsRv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical"
-         />
+        android:layout_below="@id/imgBack"
+        android:layout_marginTop="@dimen/margin_x_big"
+        android:scrollbars="vertical" />
+
 
 </RelativeLayout>
