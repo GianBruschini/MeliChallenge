@@ -10,5 +10,9 @@
 
 
     <color name="gray">#FA686464</color>
-    <color name="color_error">#FAF40000</color>
+
+
+    <color name="color_error">#EA1F68</color>
+    <color name="color_successful">#1DB55D</color>
+
 </resources>

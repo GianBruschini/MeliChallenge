@@ -13,6 +13,7 @@ import com.meli.melichallenge.data.api.model.response.Product
 import com.meli.melichallenge.databinding.FragmentProductsBinding
 import com.meli.melichallenge.presentation.adapter.ProductsAdapter
 import com.meli.melichallenge.presentation.base.BaseFragment
+import com.meli.melichallenge.util.BundleKeys
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,7 +30,7 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        productName = arguments?.getString("productName").toString()
+        productName = arguments?.getString(BundleKeys.PRODUCT_NAME).toString()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,7 +46,8 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
                     binding.productsRv.layoutManager?.let {
                         visibleItemCount = it.childCount
                         totalItemCount = it.itemCount
-                        pastVisibleItems = (it as LinearLayoutManager).findFirstVisibleItemPosition()
+                        pastVisibleItems =
+                            (it as LinearLayoutManager).findFirstVisibleItemPosition()
                     }
                     if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                         productViewModel.getProducts(productName)
@@ -55,10 +57,16 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
         })
 
         productViewModel.productsList.observe(viewLifecycleOwner) { products ->
-            products?.let {
-                this.listOfProducts = it as ArrayList<Product>
-                fillProductsRv(it)
+            if (products?.isEmpty() == true) {
+                binding.noResultsTxt.visibility = View.VISIBLE
+            } else {
+                binding.noResultsTxt.visibility = View.GONE
+                products?.let {
+                    this.listOfProducts = it as ArrayList<Product>
+                    fillProductsRv(it)
+                }
             }
+
         }
     }
 
@@ -76,9 +84,16 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
 
 
     private fun initUi() {
+        initOnClicks()
         initRecyclerView()
         initObservers()
         executeObservers()
+    }
+
+    private fun initOnClicks() {
+        binding.imgBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun executeObservers() {
@@ -111,12 +126,21 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
     }
 
     override fun onitemClick(position: Int) {
-        listOfProducts?.get(position)?.let { navigateToProductDetailFragment(it.id) }
+        listOfProducts?.get(position)
+            ?.let { navigateToProductDetailFragment(it.id, it.title, it.permalink, it.thumbnail) }
     }
 
-    private fun navigateToProductDetailFragment(productId:String) {
+    private fun navigateToProductDetailFragment(
+        productId: String,
+        productTitle: String,
+        productPermaLink: String,
+        productImage: String
+    ) {
         val bundle = Bundle().apply {
-            putString("productId", productId)
+            putString(BundleKeys.PRODUCT_ID, productId)
+            putString(BundleKeys.PRODUCT_TITLE, productTitle)
+            putString(BundleKeys.PRODUCT_PERMALINK, productPermaLink)
+            putString(BundleKeys.PRODUCT_IMAGE, productImage)
         }
         val navController = findNavController()
         navController.navigate(R.id.action_productsFragment_to_detailProductsFragment, bundle)

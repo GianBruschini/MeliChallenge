@@ -5,11 +5,16 @@
     <!-- SearchFragment-->
     <string name="search_hint">Search a product…</string>
     <string name="search_btn_text">Search</string>
+    <string name="search_warning_empty_text">You need to put a product name to continue...</string>
+
+    <!-- SearchFragment-->
+    <string name="product_no_results">No results found</string>
 
     <!-- Errors-->
     <string name="error_unknown">We couldn\'t send to send your request. Please try again.</string>
     <string name="error_network_connection">Connection error. Please check your connection and try again.</string>
     <string name="error_products_search">Error when trying to search products, please try again later.</string>
+
 
 
 </resources>
