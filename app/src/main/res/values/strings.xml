@@ -7,13 +7,18 @@
     <string name="search_btn_text">Search</string>
     <string name="search_warning_empty_text">You need to put a product name to continue...</string>
 
-    <!-- SearchFragment-->
+    <!-- ProductFragment-->
     <string name="product_no_results">No results found</string>
+    <string name="product_error_search">Error when trying to search products, please try again later.</string>
+
+    <!-- DetailProductFragment-->
+    <string name="detail_error_item">Error when trying to get item, please try again later.</string>
+    <string name="detail_permalink_info">Para obtener más información del producto, consulta:</string>
 
     <!-- Errors-->
     <string name="error_unknown">We couldn\'t send to send your request. Please try again.</string>
     <string name="error_network_connection">Connection error. Please check your connection and try again.</string>
-    <string name="error_products_search">Error when trying to search products, please try again later.</string>
+
 
 
 

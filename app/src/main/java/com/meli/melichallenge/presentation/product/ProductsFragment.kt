@@ -127,20 +127,16 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
 
     override fun onitemClick(position: Int) {
         listOfProducts?.get(position)
-            ?.let { navigateToProductDetailFragment(it.id, it.title, it.permalink, it.thumbnail) }
+            ?.let { navigateToProductDetailFragment(it.id,it.permalink) }
     }
 
     private fun navigateToProductDetailFragment(
         productId: String,
-        productTitle: String,
-        productPermaLink: String,
-        productImage: String
+        permalink: String,
     ) {
         val bundle = Bundle().apply {
             putString(BundleKeys.PRODUCT_ID, productId)
-            putString(BundleKeys.PRODUCT_TITLE, productTitle)
-            putString(BundleKeys.PRODUCT_PERMALINK, productPermaLink)
-            putString(BundleKeys.PRODUCT_IMAGE, productImage)
+            putString(BundleKeys.PRODUCT_PERMALINK, permalink)
         }
         val navController = findNavController()
         navController.navigate(R.id.action_productsFragment_to_detailProductsFragment, bundle)

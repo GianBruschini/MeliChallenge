@@ -7,6 +7,11 @@
     android:padding="@dimen/margin_medium"
     tools:context=".presentation.detailproduct.DetailProductFragment">
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/ProgressBarStyle"
+        />
+
     <ImageView
         android:id="@+id/imgBack"
         style="@style/IconBack">
@@ -47,5 +52,7 @@
         >
 
     </TextView>
+
+
 
 </RelativeLayout>

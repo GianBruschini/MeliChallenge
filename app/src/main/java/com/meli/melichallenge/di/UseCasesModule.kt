@@ -1,6 +1,7 @@
 package com.meli.melichallenge.di
 
 import com.meli.melichallenge.data.feature.product.ProductRepository
+import com.meli.melichallenge.domain.usecase.product.GetProductDetailUseCase
 import com.meli.melichallenge.domain.usecase.product.GetProductsUseCase
 import dagger.Module
 import dagger.Provides
@@ -11,6 +12,15 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object UseCasesModule {
+
+    @Provides
+    @Singleton
+    fun provideGetProductDetailUseCase(
+        productRepository: ProductRepository,
+    ): GetProductDetailUseCase {
+        return GetProductDetailUseCase(productRepository)
+    }
+
 
     @Provides
     @Singleton

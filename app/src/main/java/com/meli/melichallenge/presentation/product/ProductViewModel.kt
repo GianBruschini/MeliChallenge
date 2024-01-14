@@ -66,7 +66,7 @@ class ProductViewModel @Inject constructor(
 
     private fun handleErrorSearch() {
         _isLoaderVisible.value = false
-        _errorEvent.value = context.resources.getString(R.string.error_products_search)
+        _errorEvent.value = context.resources.getString(R.string.product_error_search)
         _isEmptySearchVisible.value = _productsList.value.isNullOrEmpty()
     }
 }

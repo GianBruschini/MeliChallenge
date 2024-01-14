@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.meli.melichallenge.R
+import com.meli.melichallenge.data.api.model.response.ItemResponse
 import com.meli.melichallenge.databinding.FragmentDetailProductsBinding
 import com.meli.melichallenge.databinding.FragmentProductsBinding
 import com.meli.melichallenge.presentation.base.BaseFragment
@@ -21,6 +23,7 @@ class DetailProductFragment : BaseFragment<FragmentDetailProductsBinding>(
     FragmentDetailProductsBinding::inflate,
 ) {
     private var productId: String = ""
+    private val detailProductViewModel: DetailProductViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,8 +37,36 @@ class DetailProductFragment : BaseFragment<FragmentDetailProductsBinding>(
     }
 
     private fun initUi() {
-        fillUi()
+        initObservers()
         initOnClicks()
+    }
+
+    private fun initObservers() {
+        detailProductViewModel.isLoaderVisible.observe(viewLifecycleOwner) {
+            handleLoading(it)
+        }
+        detailProductViewModel.getItem.observe(viewLifecycleOwner) { item->
+            item?.let { it1 -> handleItemFetched(it1) }
+        }
+        detailProductViewModel.fetchItem(productId)
+    }
+
+    private fun handleItemFetched(item: ItemResponse) {
+        fillUiWith(item)
+    }
+
+    private fun handleLoading(loading: Boolean?) {
+        when(loading){
+            true -> {
+                binding.progressBar.visibility=View.VISIBLE
+            }
+            false -> {
+                binding.progressBar.visibility=View.GONE
+            }
+            null -> {
+
+            }
+        }
     }
 
     private fun initOnClicks() {
@@ -44,22 +75,30 @@ class DetailProductFragment : BaseFragment<FragmentDetailProductsBinding>(
         }
     }
 
-    private fun fillUi() {
+    private fun fillUiWith(item: ItemResponse) {
         context?.let {
             Glide.with(it)
-                .load(arguments?.getString(BundleKeys.PRODUCT_IMAGE).toString())
+                .load(item.thumbnail)
                 .into(binding.productImage)
         }
 
-        binding.productTitle.text = arguments?.getString(BundleKeys.PRODUCT_TITLE).toString()
-        val permalinkText = "Para tener más información del producto, consulta:\n\n ${
-            arguments?.getString(BundleKeys.PRODUCT_PERMALINK).toString()}"
+        binding.productTitle.text = item.title
+        val permalinkInfo = getString(R.string.detail_permalink_info)
+        val permalinkText = "$permalinkInfo\n\n${arguments?.getString(BundleKeys.PRODUCT_PERMALINK).orEmpty()}"
         binding.productPermalink.text = permalinkText
+
         binding.productPermalink.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(arguments?.getString("productPermaLink").toString()))
-            startActivity(intent)
+            val permalinkUrl = arguments?.getString(BundleKeys.PRODUCT_PERMALINK).orEmpty()
+            openUrlInBrowser(permalinkUrl)
         }
     }
+
+    private fun openUrlInBrowser(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        startActivity(intent)
+    }
+
+
 
 
 }
