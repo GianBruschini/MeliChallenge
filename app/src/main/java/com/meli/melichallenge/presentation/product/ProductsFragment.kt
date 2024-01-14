@@ -3,16 +3,16 @@ package com.meli.melichallenge.presentation.product
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.meli.melichallenge.R
 import com.meli.melichallenge.data.api.model.response.Product
 import com.meli.melichallenge.databinding.FragmentProductsBinding
 import com.meli.melichallenge.presentation.adapter.ProductsAdapter
 import com.meli.melichallenge.presentation.base.BaseFragment
-import com.meli.melichallenge.presentation.search.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,7 +21,7 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
 ), ProductsAdapter.OnItemClickListener {
     private var listOfProducts: ArrayList<Product>? = null
     private var productName = ""
-    private val searchViewModel: SearchViewModel by viewModels()
+    private val productViewModel: ProductViewModel by viewModels()
     private var productsAdapter: ProductsAdapter = ProductsAdapter()
     private var visibleItemCount = 0
     private var totalItemCount = 0
@@ -48,15 +48,15 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
                         pastVisibleItems = (it as LinearLayoutManager).findFirstVisibleItemPosition()
                     }
                     if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
-                        searchViewModel.getProducts(productName)
+                        productViewModel.getProducts(productName)
                     }
                 }
             }
         })
 
-        // Observa cambios en la lista de productos
-        searchViewModel.productsList.observe(viewLifecycleOwner) { products ->
+        productViewModel.productsList.observe(viewLifecycleOwner) { products ->
             products?.let {
+                this.listOfProducts = it as ArrayList<Product>
                 fillProductsRv(it)
             }
         }
@@ -65,7 +65,6 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initRecyclerView() {
-
         val linearLayoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.productsRv.layoutManager = linearLayoutManager
@@ -73,8 +72,6 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
         binding.productsRv.adapter = productsAdapter
         binding.productsRv.adapter?.notifyDataSetChanged()
         productsAdapter.setOnItemClickListener(this)
-
-
     }
 
 
@@ -85,7 +82,7 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
     }
 
     private fun executeObservers() {
-        searchViewModel.getProducts(productName)
+        productViewModel.getProducts(productName)
     }
 
     @SuppressLint("UseCompatLoadingForDrawables", "NotifyDataSetChanged")
@@ -96,7 +93,7 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
     }
 
     private fun initObservers() {
-        searchViewModel.isLoaderVisible.observe(viewLifecycleOwner) {
+        productViewModel.isLoaderVisible.observe(viewLifecycleOwner) {
             handleLoading(it)
         }
     }
@@ -114,8 +111,15 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
     }
 
     override fun onitemClick(position: Int) {
-
+        listOfProducts?.get(position)?.let { navigateToProductDetailFragment(it.id) }
     }
 
+    private fun navigateToProductDetailFragment(productId:String) {
+        val bundle = Bundle().apply {
+            putString("productId", productId)
+        }
+        val navController = findNavController()
+        navController.navigate(R.id.action_productsFragment_to_detailProductsFragment, bundle)
+    }
 
 }

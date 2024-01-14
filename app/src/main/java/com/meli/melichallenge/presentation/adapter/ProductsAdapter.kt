@@ -38,7 +38,7 @@ class ProductsAdapter: RecyclerView.Adapter<ProductsAdapter.MyViewHolder>() {
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val url = listOfProducts[position].thumbnail
-        context?.let { Glide.with(it).load("https://http2.mlstatic.com/D_738121-MLU72537283306_112023-I.jpg").into(holder.binding.productImage) }
+        context?.let { Glide.with(it).load(url).into(holder.binding.productImage) }
         holder.binding.productTitle.text = listOfProducts[position].title
         holder.binding.productPrice.text = listOfProducts[position].price.toString()
 
@@ -56,7 +56,7 @@ class ProductsAdapter: RecyclerView.Adapter<ProductsAdapter.MyViewHolder>() {
     inner class MyViewHolder(val binding: ProductItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         init {
-            binding.rlProduct.setOnClickListener {
+            binding.cardProduct.setOnClickListener {
                 if (mListener != null) {
                     val position = adapterPosition
                     if (position != RecyclerView.NO_POSITION) {

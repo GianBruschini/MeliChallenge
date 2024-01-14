@@ -1,7 +1,6 @@
-package com.meli.melichallenge.presentation.search
+package com.meli.melichallenge.presentation.product
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,10 +13,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val PAGE_SIZE = 50
-
 @HiltViewModel
-class SearchViewModel @Inject constructor(
+class ProductViewModel @Inject constructor(
     private val getProductsUseCase: GetProductsUseCase,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
@@ -41,8 +38,7 @@ class SearchViewModel @Inject constructor(
     private val PAGE_SIZE = 50
 
     fun getProducts(aProduct: String) {
-        if (_hasMoreItems.value == false) return // No más elementos para cargar
-
+        if (_hasMoreItems.value == false) return // no more elementss to load
         _isLoaderVisible.value = true
         viewModelScope.launch {
             val resultQuery = getProductsUseCase.searchProducts(aProduct, currentPage, PAGE_SIZE)
@@ -64,10 +60,7 @@ class SearchViewModel @Inject constructor(
             _productsList.value = currentList
         }
 
-        // Actualiza el indicador de carga infinita
         _hasMoreItems.value = results.size == PAGE_SIZE
-
-        // Incrementa la página actual
         currentPage++
     }
 
@@ -77,4 +70,3 @@ class SearchViewModel @Inject constructor(
         _isEmptySearchVisible.value = _productsList.value.isNullOrEmpty()
     }
 }
-
