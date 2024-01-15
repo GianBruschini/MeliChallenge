@@ -17,30 +17,11 @@ Esta es una aplicación de ejemplo desarrollada como parte del desafío técnico
     - Core Testing: Proporciona clases y métodos de utilidad para realizar pruebas en componentes de Android.
     - Kotlin Coroutines Test: Ofrece funciones de prueba específicas para coroutines.
  
-    - ## **Estructura del Proyecto**
+    -
+- **data:** Contiene las clases responsables de acceder y gestionar los datos de la aplicación.
+- **di:** Contiene las clases que proveen los módulos adecuados para la gestión de la inyección de dependencias.
+- **domain:** Contiene las clases que definen la lógica de negocio de la aplicación.
+- **presentation:** Contiene las clases encargadas de la interfaz de usuario y la presentación de datos.
 
-La estructura del proyecto sigue las mejores prácticas de organización:
-
-|-- app
-    |-- src
-        |-- main
-            |-- java
-                |-- com.example.mercadolibre
-                    |-- data
-										|-- di
-                    |-- domain
-                    |-- presentation
-            |-- res
-|-- test
-    |-- java
-        |-- com.example.mercadolibre
-            |-- data
-            |-- domain
-            |-- presentation
-
-```
-
-- **`data`:** Contiene las clases responsables de acceder y gestionar los datos de la aplicación.
-- **`di`:** Contiene las clases que proveen los módulos adecuados para la gestión de la inyección de dependencias.
-- **`domain`:** Contiene las clases que definen la lógica de negocio de la aplicación.
-- **`presentation`:** Contiene las clases encargadas de la interfaz de usuario y la presentación de datos.
+**Diseño de Layouts**
+Se ha prestado especial atención al diseño de los layouts, utilizando estilos y layouts adecuados para representar los elementos en pantalla. Esto garantiza una experiencia de usuario consistente y agradable.
