@@ -17,7 +17,7 @@ class ProductRepositoryTest {
     private val productRepository = ProductRepository(apiClient)
 
     @Test
-    fun searchProducts_Success() = runBlocking {
+    fun `search products successful`() = runBlocking {
         val product = "exampleProduct"
         val offset = 0
         val limit = 10
@@ -33,7 +33,7 @@ class ProductRepositoryTest {
     }
 
     @Test
-    fun getItem_Success() = runBlocking {
+    fun `get items successful`() = runBlocking {
         val itemId = "exampleItemId"
         val expectedResult: Response<ItemResponse> = mockk()
 
