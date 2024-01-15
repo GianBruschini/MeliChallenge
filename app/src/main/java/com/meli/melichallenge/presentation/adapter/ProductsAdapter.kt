@@ -39,10 +39,11 @@ class ProductsAdapter: RecyclerView.Adapter<ProductsAdapter.MyViewHolder>() {
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val url = listOfProducts[position].thumbnail
         context?.let { Glide.with(it).load(url).into(holder.binding.productImage) }
+        val formattedPrice = String.format("$%,d", listOfProducts[position].price.toInt())
         holder.binding.productTitle.text = listOfProducts[position].title
-        holder.binding.productPrice.text = listOfProducts[position].price.toString()
-
+        holder.binding.productPrice.text = formattedPrice
     }
+
 
     override fun getItemCount(): Int {
         return listOfProducts.size

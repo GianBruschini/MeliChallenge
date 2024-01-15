@@ -35,7 +35,7 @@ class ProductViewModel @Inject constructor(
     val hasMoreItems: LiveData<Boolean> get() = _hasMoreItems
 
     private var currentPage = 1
-    private val PAGE_SIZE = 50
+    private val PAGE_SIZE = 20
 
     fun getProducts(aProduct: String) {
         if (_hasMoreItems.value == false) return // no more elementss to load
