@@ -34,7 +34,7 @@ class ProductRepositoryTest {
 
     @Test
     fun `get items successful`() = runBlocking {
-        val itemId = "exampleItemId"
+        val itemId = "55555"
         val expectedResult: Response<ItemResponse> = mockk()
 
         coEvery {
