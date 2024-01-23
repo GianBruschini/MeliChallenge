@@ -5,6 +5,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -16,6 +18,7 @@ import com.meli.melichallenge.databinding.FragmentProductsBinding
 import com.meli.melichallenge.presentation.base.BaseFragment
 import com.meli.melichallenge.presentation.product.ProductViewModel
 import com.meli.melichallenge.util.BundleKeys
+import com.meli.melichallenge.util.showCustomToast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -48,7 +51,22 @@ class DetailProductFragment : BaseFragment<FragmentDetailProductsBinding>(
         detailProductViewModel.getItem.observe(viewLifecycleOwner) { item->
             item?.let { it1 -> handleItemFetched(it1) }
         }
+
+        detailProductViewModel.errorEvent.observe(viewLifecycleOwner) { it->
+            handleError(it)
+        }
         detailProductViewModel.fetchItem(productId)
+    }
+
+    private fun handleError(messageToShow: String?) {
+        ContextCompat.getDrawable(requireContext(), R.drawable.rounded_gradient_error)
+            ?.let { drawable ->
+                Toast(requireContext()).showCustomToast(
+                    messageToShow.toString(),
+                    drawable,
+                    requireActivity()
+                )
+            }
     }
 
     private fun handleItemFetched(item: ItemResponse) {

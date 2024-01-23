@@ -4,6 +4,8 @@ package com.meli.melichallenge.presentation.product
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +16,7 @@ import com.meli.melichallenge.databinding.FragmentProductsBinding
 import com.meli.melichallenge.presentation.adapter.ProductsAdapter
 import com.meli.melichallenge.presentation.base.BaseFragment
 import com.meli.melichallenge.util.BundleKeys
+import com.meli.melichallenge.util.showCustomToast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -111,6 +114,21 @@ class ProductsFragment : BaseFragment<FragmentProductsBinding>(
         productViewModel.isLoaderVisible.observe(viewLifecycleOwner) {
             handleLoading(it)
         }
+        productViewModel.errorEvent.observe(viewLifecycleOwner) {
+            handleError(it)
+        }
+
+    }
+
+    private fun handleError(messageToShow: String?) {
+        ContextCompat.getDrawable(requireContext(), R.drawable.rounded_gradient_error)
+            ?.let { drawable ->
+                Toast(requireContext()).showCustomToast(
+                    messageToShow.toString(),
+                    drawable,
+                    requireActivity()
+                )
+            }
     }
 
     private fun handleLoading(loading: Boolean) {
